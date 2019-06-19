@@ -1,12 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# Copyright © Spyder Project Contributors
-# Licensed under the terms of the MIT License
-# (see spyder/__init__.py for details)
-
-"""
-String search and match utilities usefull when filtering a list of texts.
-"""
 
 import re
 
@@ -16,24 +7,7 @@ NO_SCORE = 0
 
 
 def get_search_regex(query, ignore_case=True):
-    """Returns a compiled regex pattern to search for query letters in order.
 
-    Parameters
-    ----------
-    query : str
-        String to search in another string (in order of character occurrence).
-    ignore_case : True
-        Optional value perform a case insensitive search (True by default).
-
-    Returns
-    -------
-    pattern : SRE_Pattern
-
-    Notes
-    -----
-    This function adds '.*' between the query characters and compiles the
-    resulting regular expression.
-    """
     regex_text = [char for char in query if char != ' ']
     regex_text = '.*'.join(regex_text)
 
@@ -49,44 +23,8 @@ def get_search_regex(query, ignore_case=True):
 
 def get_search_score(query, choice, ignore_case=True, apply_regex=True,
                      template='{}'):
-    """Returns a tuple with the enriched text (if a template is provided) and
-    a score for the match.
+  
 
-    Parameters
-    ----------
-    query : str
-        String with letters to search in choice (in order of appearance).
-    choice : str
-        Sentence/words in which to search for the 'query' letters.
-    ignore_case : bool, optional
-        Optional value perform a case insensitive search (True by default).
-    apply_regex : bool, optional
-        Optional value (True by default) to perform a regex search. Useful
-        when this function is called directly.
-    template : str, optional
-        Optional template string to surround letters found in choices. This is
-        useful when using a rich text editor ('{}' by default).
-        Examples: '<b>{}</b>', '<code>{}</code>', '<i>{}</i>'
-
-    Returns
-    -------
-    results : tuple
-        Tuples where the first item is the text (enriched if a template was
-        used) and the second item is a search score.
-
-    Notes
-    -----
-    The score is given according the following precedence (high to low):
-
-    - Letters in one word and no spaces with exact match.
-      Example: 'up' in 'up stroke'
-    - Letters in one word and no spaces with partial match.
-      Example: 'up' in 'upstream stroke'
-    - Letters in one word but with skip letters.
-      Example: 'cls' in 'close up'
-    - Letters in two or more words
-      Example: 'cls' in 'car lost'
-    """
     original_choice = choice
     result = (original_choice, NOT_FOUND_SCORE)
 
@@ -178,31 +116,8 @@ def get_search_score(query, choice, ignore_case=True, apply_regex=True,
 
 def get_search_scores(query, choices, ignore_case=True, template='{}',
                       valid_only=False, sort=False):
-    """Search for query inside choices and return a list of tuples.
+    
 
-    Returns a list of tuples of text with the enriched text (if a template is
-    provided) and a score for the match. Lower scores imply a better match.
-
-    Parameters
-    ----------
-    query : str
-        String with letters to search in each choice (in order of appearance).
-    choices : list of str
-        List of sentences/words in which to search for the 'query' letters.
-    ignore_case : bool, optional
-        Optional value perform a case insensitive search (True by default).
-    template : str, optional
-        Optional template string to surround letters found in choices. This is
-        useful when using a rich text editor ('{}' by default).
-        Examples: '<b>{}</b>', '<code>{}</code>', '<i>{}</i>'
-
-    Returns
-    -------
-    results : list of tuples
-        List of tuples where the first item is the text (enriched if a
-        template was used) and a search score. Lower scores means better match.
-    """
-    # First remove spaces from query
     query = query.replace(' ', '')
     pattern = get_search_regex(query, ignore_case)
     results = []
@@ -230,51 +145,3 @@ def get_search_scores(query, choices, ignore_case=True, template='{}',
     return results
 
 
-def test():
-    template = '<b>{0}</b>'
-    names = ['close pane', 'debug continue', 'debug exit', 'debug step into',
-             'debug step over', 'debug step return', 'fullscreen mode',
-             'layout preferences', 'lock unlock panes', 'maximize pane',
-             'preferences', 'quit', 'restart', 'save current layout',
-             'switch to breakpoints', 'switch to console', 'switch to editor',
-             'switch to explorer', 'switch to find_in_files',
-             'switch to historylog', 'switch to help',
-             'switch to ipython_console', 'switch to onlinehelp',
-             'switch to outline_explorer', 'switch to project_explorer',
-             'switch to variable_explorer',
-             'use next layout', 'use previous layout', 'clear line',
-             'clear shell', 'inspect current object', 'blockcomment',
-             'breakpoint', 'close all', 'code completion',
-             'conditional breakpoint', 'configure', 'copy', 'copy line', 'cut',
-             'debug', 'debug with winpdb', 'delete', 'delete line',
-             'duplicate line', 'end of document', 'end of line',
-             'file list management', 'find next', 'find previous', 'find text',
-             'go to definition', 'go to line', 'go to next file',
-             'go to previous file', 'inspect current object', 'kill next word',
-             'kill previous word', 'kill to line end', 'kill to line start',
-             'last edit location', 'move line down', 'move line up',
-             'new file', 'next char', 'next cursor position', 'next line',
-             'next word', 'open file', 'paste', 'previous char',
-             'previous cursor position', 'previous line', 'previous word',
-             'print', 're-run last script', 'redo', 'replace text',
-             'rotate kill ring', 'run', 'run selection', 'save all', 'save as',
-             'save file', 'select all', 'show/hide outline',
-             'show/hide project explorer', 'start of document',
-             'start of line', 'toggle comment', 'unblockcomment', 'undo',
-             'yank', 'run profiler', 'run analysis']
-
-    a = get_search_scores('lay', names, template=template, )
-    b = get_search_scores('lay', names, template=template, valid_only=True,
-                          sort=True)
-    # Full results
-    for r in a:
-        print(r)  # spyder: test-skip
-    
-    # Ordered and filtered results
-    print('\n')  # spyder: test-skip
-
-    for r in b:
-        print(r)  # spyder: test-skip
-
-if __name__ == '__main__':
-    test()
